@@ -1,0 +1,22 @@
+---
+- name: install nfs
+  apt:
+    name: nfs-kernel-server
+    state: latest
+
+- name: create nfs directory
+  file:
+      path: /opt/nfs4
+      state: directory
+      owner: nobody
+      group: nogroup
+      mode: 0777
+
+- name: configure nfs
+  lineinfile:
+      path: /etc/exports
+      regexp: '/opt/nfs4'
+      line: '/opt/nfs4 *(rw,sync,no_subtree_check,no_root_squash)'
+
+- name: restart nfs
+  command: systemctl restart nfs-kernel-server
