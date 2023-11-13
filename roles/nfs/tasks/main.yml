@@ -19,4 +19,7 @@
       line: '/opt/nfs4 *(rw,sync,no_subtree_check,no_root_squash)'
 
 - name: restart nfs
-  command: systemctl restart nfs-kernel-server
+  systemd:
+      name: nfs-kernel-server
+      state: restarted
+      daemon_reload: yes

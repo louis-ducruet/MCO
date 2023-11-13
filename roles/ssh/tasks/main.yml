@@ -12,4 +12,7 @@
     line: 'PasswordAuthentication no'
 
 - name: restart sshd
-  command: systemctl restart sshd
+  systemd:
+    name: sshd
+    state: restarted
+    daemon_reload: yes
