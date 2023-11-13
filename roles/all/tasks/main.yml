@@ -1,0 +1,20 @@
+---
+- name: Install Vim
+  apt:
+    name: vim
+    state: latest
+
+- name: copy my SSH key
+  authorized_key:
+    user: rogar
+    state: present
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO3404kuZXVknsf9dO7XO/XtnHG/qbvLW6G7Bv53kuLK rogar@rovagug"
+
+- name: configure SSHD
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '#PasswordAuthentication yes'
+    line: 'PasswordAuthentication no'
+
+- name: restart SSHd
+  command: systemctl restart sshd
