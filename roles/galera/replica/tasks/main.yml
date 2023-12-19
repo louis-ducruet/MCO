@@ -1,0 +1,13 @@
+---
+- name: Copy galera replica config file
+  template:
+    src: roles/galera/templates/galera_replica.cnf
+    dest: /etc/mysql/conf.d/galera.cnf
+  register: galerareplconf
+
+- name: Restart mariadb
+  systemd:
+    name: mariadb.service
+    state: restarted
+  when: galerareplconf.changed
+    

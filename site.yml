@@ -3,10 +3,52 @@
   gather_facts: yes
   become: yes
   roles:
-    - role: ssh
+    - role: all
+
+- hosts: proxy
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: proxy
+
+- hosts: keepalive_master
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: keepalived/master
+
+- hosts: keepalive_backup
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: keepalived/backup
 
 - hosts: nfs
   gather_facts: yes
   become: yes
   roles:
     - role: nfs
+
+- hosts: bdd
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: bdd
+
+- hosts: galera_bootstrap
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: galera/bootstrap
+
+- hosts: galera_other
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: galera/replica
+
+- hosts: web
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: web

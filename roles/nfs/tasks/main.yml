@@ -6,20 +6,28 @@
 
 - name: create nfs directory
   file:
-      path: /opt/nfs4
-      state: directory
-      owner: nobody
-      group: nogroup
-      mode: 0777
+    path: /srv/nfs
+    state: directory
+    mode: 0755
 
 - name: configure nfs
   lineinfile:
-      path: /etc/exports
-      regexp: '/opt/nfs4'
-      line: '/opt/nfs4 *(rw,sync,no_subtree_check,no_root_squash)'
+    path: /etc/exports
+    regexp: '^/srv/nfs.*$'
+    line: '/srv/nfs 10.200.11.0/24(rw,sync,no_subtree_check,no_root_squash,anonuid=33,anongid=33)'
+    state: present
 
-- name: restart nfs
-  systemd:
-      name: nfs-kernel-server
-      state: restarted
-      daemon_reload: yes
+- name: export nfs
+  command: exportfs -a
+  
+- name: check wordpress directory existance
+  stat:
+    path: /srv/nfs/wordpress
+  register: wordpressinstall
+  
+- name: download wordpress archive
+  unarchive:
+    src: "https://fr.wordpress.org/latest-fr_FR.tar.gz"
+    dest: /srv/nfs
+    remote_src: yes
+  when: not wordpressinstall.stat.exists

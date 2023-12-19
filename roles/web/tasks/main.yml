@@ -1,0 +1,51 @@
+---
+- name: Install apache2 and php dep
+  apt:
+    update_cache: yes
+    pkg:
+      - apache2
+      - libapache2-mod-php
+      - php
+      - php8.2-mysql
+      - php8.2-gd
+      - php8.2-imagick
+      - nfs-common
+    state: latest
+
+- name: Restart apache2
+  systemd:
+    name: apache2.service
+    state: restarted
+    
+- name: add fstab nfs line
+  file:
+    path: "/var/www/nfs"
+    state: directory
+    mode: "0755"
+    owner: www-data
+    group: www-data
+    
+- name: Add nfs mount
+  lineinfile:
+    path: /etc/fstab
+    regexp: "^/srv/nfs.*$"
+    line: "10.200.11.2:/srv/nfs /var/www/nfs nfs noatime,nodiratime,user 0 0"
+    state: present
+
+- name: mount nfs share
+  command: mount -a
+  
+- name: check if default site is active
+  stat:
+    path: /etc/aoache2/site-enabled/000-default.conf
+  register: apachedefault
+  
+- name: disable a default apache2 site
+  command: a2dissite 000-default
+  when: apachedefault.stat.exists
+  
+- name: reload apache2 after disable default site
+  systemd:
+    name: apache2.service
+    state: reloaded
+  when: apachedefault.stat.exists
